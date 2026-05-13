@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demo App</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+    {% if current_user.is_authenticated %}
+    <!-- This is the top navigation bar that stays fixed at the top -->
+    <nav class="navbar">
+        <div class="nav-left">
+            <button class="menu-toggle" id="menu-toggle" title="Toggle Sidebar">☰</button>
+            <h2 class="app-logo">Demo App</h2>
+        </div>
+        <div class="nav-right">
+            <button class="theme-toggle" id="theme-toggle" title="Switch between Dark and Light mode">🌙</button>
+            <a href="{{ url_for('profile.view_profile') }}" class="profile-link" title="Go to your profile">
+                <!-- If the image exists but fails to load (404), we catch the error and show the symbol instead -->
+                <img src="{{ url_for('static', filename='uploads/' + current_user.profile_image) if current_user.profile_image else '' }}" 
+                     alt="Profile"
+                     class="profile-icon"
+                     {% if not current_user.profile_image %} style="display: none;" {% endif %}
+                     onerror="this.style.display='none'; document.getElementById('navbar-default-avatar').style.display='flex';">
+                
+                <div id="navbar-default-avatar" class="profile-icon default-avatar" 
+                     {% if current_user.profile_image %} style="display: none;" {% endif %}>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width: 20px; height: 20px;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                </div>
+            </a>
+        </div>
+    </nav>
+
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <ul class="nav-links">
+                <li>
+                    <a href="{{ url_for('profile.dashboard') }}" class="{{ 'active' if request.endpoint == 'profile.dashboard' else '' }}">
+                        <span class="nav-icon">📊</span> Dashboard
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('profile.view_profile') }}" class="{{ 'active' if request.endpoint == 'profile.view_profile' else '' }}">
+                        <span class="nav-icon">👤</span> User Profile
+                    </a>
+                </li>
+                <li class="logout-link">
+                    <a href="{{ url_for('auth.logout') }}">
+                        <span class="nav-icon">🚪</span> Logout
+                    </a>
+                </li>
+            </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="content-wrapper">
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                <div class="flash-messages">
+                    {% for category, message in messages %}
+                    <div class="alert {{ category }}">{{ message }}</div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+                {% endwith %}
+
+                {% block content %}{% endblock %}
+            </div>
+        </main>
+    </div>
+    {% else %}
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <div class="flash-messages" style="max-width: 400px; margin: 20px auto 0;">
+        {% for category, message in messages %}
+        <div class="alert {{ category }}">{{ message }}</div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    {% endwith %}
+    {% block auth_content %}{% endblock %}
+    {% endif %}
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+
+</html>

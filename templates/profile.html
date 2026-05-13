@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">User Profile</h1>
+</div>
+
+<div class="profile-grid">
+    <!-- Section for uploading or changing the profile photo -->
+    <div class="card photo-upload-section">
+        <!-- We use a small script to switch to the default symbol if the image file is missing or broken -->
+        <img src="{{ url_for('static', filename='uploads/' + user.profile_image) if user.profile_image else '' }}" 
+             alt="Profile Photo" 
+             class="photo-preview" 
+             id="photo_preview"
+             {% if not user.profile_image %} style="display: none;" {% endif %}
+             onerror="this.style.display='none'; document.getElementById('default_avatar').style.display='flex';">
+        
+        <div id="default_avatar" style="width: 150px; height: 150px; border-radius: 50%; background-color: var(--primary-color); color: white; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; {% if user.profile_image %} display: none; {% endif %}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 80px; height: 80px;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+        </div>
+        
+        <form action="{{ url_for('profile.upload_photo') }}" method="POST" enctype="multipart/form-data">
+            <div class="file-input-wrapper">
+                <label for="profile_photo" class="btn btn-secondary" style="display: inline-block; cursor: pointer; width: 100%;">Choose Photo</label>
+                <input type="file" name="profile_photo" id="profile_photo" accept=".jpg,.jpeg,.png,.webp" required>
+            </div>
+            <button type="submit" class="btn btn-primary" style="padding: 8px; font-size: 0.9rem;">Upload</button>
+            <p style="margin-top: 10px; font-size: 0.8rem; color: var(--text-muted);">Max size: 2MB (JPG, PNG, WEBP)</p>
+        </form>
+    </div>
+
+    <!-- Profile Edit Section -->
+    <div class="card">
+        <h3 style="margin-bottom: 24px;">Edit Profile Details</h3>
+        <form action="{{ url_for('profile.update_profile_route') }}" method="POST">
+            <div class="form-group">
+                <label for="full_name">Full Name</label>
+                <input type="text" id="full_name" name="full_name" class="form-control" value="{{ user.full_name }}" required>
+            </div>
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" class="form-control" value="{{ user.email }}" readonly>
+                <small style="color: var(--text-muted); margin-top: 4px; display: block;">Email cannot be changed.</small>
+            </div>
+            <div class="form-group">
+                <label for="phone">Phone Number</label>
+                <input type="text" id="phone" name="phone" class="form-control" value="{{ user.phone or '' }}">
+            </div>
+            <div class="form-group">
+                <label for="bio">Bio</label>
+                <textarea id="bio" name="bio" class="form-control">{{ user.bio or '' }}</textarea>
+            </div>
+            <div class="form-group">
+                <label for="address">Address</label>
+                <textarea id="address" name="address" class="form-control">{{ user.address or '' }}</textarea>
+            </div>
+            <button type="submit" class="btn btn-primary" style="margin-top: 16px;">Save Changes</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    // Reveal photo preview for users without profile image when they select a file
+    document.getElementById('profile_photo').addEventListener('change', function() {
+        const preview = document.getElementById('photo_preview');
+        if (preview.style.display === 'none') {
+            preview.style.display = 'block';
+            // hide default avatar if it exists
+            const defaultAvatar = preview.previousElementSibling;
+            if (defaultAvatar) {
+                defaultAvatar.style.display = 'none';
+            }
+        }
+    });
+</script>
+{% endblock %}
