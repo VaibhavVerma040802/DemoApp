@@ -9,7 +9,7 @@
     <!-- Section for uploading or changing the profile photo -->
     <div class="card photo-upload-section">
         <!-- We use a small script to switch to the default symbol if the image file is missing or broken -->
-        <img src="{{ url_for('static', filename='uploads/' + user.profile_image) if user.profile_image else '' }}" 
+        <img src="{{ user.profile_image if user.profile_image.startswith('data:') else url_for('static', filename='uploads/' + user.profile_image) if user.profile_image else '' }}" 
              alt="Profile Photo" 
              class="photo-preview" 
              id="photo_preview"
@@ -61,16 +61,21 @@
 </div>
 
 <script>
-    // Reveal photo preview for users without profile image when they select a file
+    // When a user selects a photo, we show the preview and hide the default symbol
     document.getElementById('profile_photo').addEventListener('change', function() {
         const preview = document.getElementById('photo_preview');
-        if (preview.style.display === 'none') {
-            preview.style.display = 'block';
-            // hide default avatar if it exists
-            const defaultAvatar = preview.previousElementSibling;
-            if (defaultAvatar) {
-                defaultAvatar.style.display = 'none';
-            }
+        const defaultAvatar = document.getElementById('default_avatar');
+        
+        if (this.files && this.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                preview.src = e.target.result;
+                preview.style.display = 'block';
+                if (defaultAvatar) {
+                    defaultAvatar.style.display = 'none';
+                }
+            };
+            reader.readAsDataURL(this.files[0]);
         }
     });
 </script>

@@ -1,5 +1,6 @@
 import os
 import uuid
+import base64
 from flask import Blueprint, render_template, request, redirect, url_for, flash, current_app
 from flask_login import login_required, current_user
 from models.user_model import update_profile, update_profile_image, get_user_by_id
@@ -71,16 +72,13 @@ def upload_photo():
         return redirect(url_for('profile.view_profile'))
         
     if file and allowed_file(file.filename):
-        # We give the file a random name for organization and extra security
-        ext = file.filename.rsplit('.', 1)[1].lower()
-        new_filename = f"{uuid.uuid4().hex}.{ext}"
+        # Vercel is read-only, so we convert the image to Base64 and store it in the database
+        file_content = file.read()
+        encoded_content = base64.b64encode(file_content).decode('utf-8')
+        mime_type = file.mimetype
+        base64_image = f"data:{mime_type};base64,{encoded_content}"
         
-        os.makedirs(current_app.config['UPLOAD_FOLDER'], exist_ok=True)
-        
-        filepath = os.path.join(current_app.config['UPLOAD_FOLDER'], new_filename)
-        file.save(filepath)
-        
-        update_profile_image(current_user.id, new_filename)
+        update_profile_image(current_user.id, base64_image)
         flash('Photo uploaded successfully.', 'success')
     else:
         flash('Invalid file format. Allowed: jpg, jpeg, png, webp', 'error')
