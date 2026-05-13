@@ -12,7 +12,7 @@ class Config:
     MAIL_USE_TLS = os.environ.get('MAIL_USE_TLS', 'true').lower() in ['true', 'on', '1']
     MAIL_USERNAME = os.environ.get('MAIL_USERNAME', 'example@gmail.com')
     MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD', 'your-app-password')
-    MAIL_DEFAULT_SENDER = os.environ.get('MAIL_DEFAULT_SENDER', 'BDA Technologies')
+    MAIL_DEFAULT_SENDER = os.environ.get('MAIL_DEFAULT_SENDER', 'Demo App')
 
     # Settings for handling profile photo uploads (Max 2MB and specific formats)
     UPLOAD_FOLDER = os.path.join('static', 'uploads')
