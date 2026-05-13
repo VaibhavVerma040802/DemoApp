@@ -9,7 +9,7 @@
     <!-- Section for uploading or changing the profile photo -->
     <div class="card photo-upload-section">
         <!-- We use a small script to switch to the default symbol if the image file is missing or broken -->
-        <img src="{{ user.profile_image if user.profile_image.startswith('data:') else url_for('static', filename='uploads/' + user.profile_image) if user.profile_image else '' }}" 
+        <img src="{{ user.profile_image if user.profile_image and user.profile_image.startswith('data:') else url_for('static', filename='uploads/' + user.profile_image) if user.profile_image else '' }}" 
              alt="Profile Photo" 
              class="photo-preview" 
              id="photo_preview"

@@ -21,7 +21,7 @@
             <button class="theme-toggle" id="theme-toggle" title="Switch between Dark and Light mode">🌙</button>
             <a href="{{ url_for('profile.view_profile') }}" class="profile-link" title="Go to your profile">
                 <!-- We check if the image is a Base64 string or a local file -->
-                <img src="{{ current_user.profile_image if current_user.profile_image.startswith('data:') else url_for('static', filename='uploads/' + current_user.profile_image) if current_user.profile_image else '' }}" 
+                <img src="{{ current_user.profile_image if current_user.profile_image and current_user.profile_image.startswith('data:') else url_for('static', filename='uploads/' + current_user.profile_image) if current_user.profile_image else '' }}" 
                      alt="Profile"
                      class="profile-icon"
                      {% if not current_user.profile_image %} style="display: none;" {% endif %}

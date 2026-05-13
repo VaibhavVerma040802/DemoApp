@@ -1,10 +1,11 @@
 import os
 from flask import Flask
 from dotenv import load_dotenv
-from config import Config
 
-# Load environment variables from .env file
+# Load environment variables from .env file FIRST
 load_dotenv()
+
+from config import Config
 from flask_mail import Mail
 from flask_login import LoginManager
 from database.db_connection import init_db
